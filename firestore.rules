@@ -1,0 +1,159 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "danguero21@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true)
+      );
+    }
+
+    match /users/{userId} {
+      function isValidUserProfile(data) {
+        return data.keys().hasAll(['id', 'name', 'age']) &&
+               data.id is string && (data.id == userId || isAdmin()) &&
+               data.name is string && data.name.size() <= 100 &&
+               data.age is number && data.age >= 18 &&
+               (!('photos' in data) || (data.photos is list && data.photos.size() <= 20));
+      }
+
+      function mayCreateTrustFields(data) {
+        return isAdmin() ||
+               ((!('isAdmin' in data) || data.isAdmin == false) &&
+                (!('isSelfieExempt' in data) || data.isSelfieExempt == false) &&
+                (!('isVerified' in data) || data.isVerified == false));
+      }
+
+      function trustFieldsUnchanged() {
+        return isAdmin() ||
+               ((!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.get('isAdmin', false)) &&
+                (!('isSelfieExempt' in request.resource.data) || request.resource.data.isSelfieExempt == resource.data.get('isSelfieExempt', false)) &&
+                (!('isVerified' in request.resource.data) || request.resource.data.isVerified == resource.data.get('isVerified', false)));
+      }
+
+      function isExpiredSessionCleanup() {
+        return isSignedIn() &&
+               (!('sessionExpiresAt' in resource.data) ||
+                !(resource.data.sessionExpiresAt is number) ||
+                resource.data.sessionExpiresAt < request.time.toMillis()) &&
+               request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'isSignedIn', 'sessionExpiresAt', 'lastSeen']) &&
+               request.resource.data.status == 'offline' &&
+               request.resource.data.isSignedIn == false;
+      }
+
+      function isSocialInteractionUpdate() {
+        return isSignedIn() &&
+               request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedByUsers', 'superLikedByUsers', 'unlockedPrivateUsers', 'viewedByUsers', 'likedUsers', 'superLikedUsers']) &&
+               trustFieldsUnchanged();
+      }
+
+      function isBiometricVerificationUpdate() {
+        return isOwner(userId) &&
+               (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.get('isAdmin', false)) &&
+               (!('isSelfieExempt' in request.resource.data) || request.resource.data.isSelfieExempt == resource.data.get('isSelfieExempt', false)) &&
+               request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isVerified', 'lastVerifiedAt', 'lastSelfieAttemptAt', 'referenceSelfieUrl']) &&
+               request.resource.data.isVerified is bool &&
+               request.resource.data.lastVerifiedAt is number &&
+               request.resource.data.lastSelfieAttemptAt is number;
+      }
+
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if (isOwner(userId) || isAdmin()) && !(userId in ['1', '2', '3', '4', '5']) && isValidUserProfile(request.resource.data) && mayCreateTrustFields(request.resource.data);
+      allow update: if ((isOwner(userId) || isAdmin()) && isValidUserProfile(request.resource.data) &&
+                    request.resource.data.id == resource.data.id && trustFieldsUnchanged()) ||
+                    isBiometricVerificationUpdate() ||
+                    isExpiredSessionCleanup() ||
+                    isSocialInteractionUpdate();
+      allow delete: if isAdmin() || userId in ['1', '2', '3', '4', '5'];
+    }
+
+    match /chats/{chatId} {
+      function isParticipant() {
+        return isSignedIn() && resource != null && request.auth.uid in resource.data.participants;
+      }
+
+      allow get: if isSignedIn() && (isAdmin() || resource == null || request.auth.uid in resource.data.participants);
+      allow list: if isSignedIn() && (isAdmin() || request.auth.uid in resource.data.participants);
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.participants;
+      allow update: if isAdmin() || (isParticipant() && 
+                    request.resource.data.participants == resource.data.participants);
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        function isValidMessage(data) {
+          return data.keys().hasAll(['senderId', 'receiverId', 'text', 'timestamp']) &&
+                 data.senderId == request.auth.uid &&
+                 data.text is string && data.text.size() <= 5000 &&
+                 data.timestamp == request.time;
+        }
+
+        allow get: if isSignedIn() && (isAdmin() || (get(/databases/$(database)/documents/chats/$(chatId)).data.participants.hasAny([request.auth.uid])));
+        allow list: if isSignedIn() && (isAdmin() || (get(/databases/$(database)/documents/chats/$(chatId)).data.participants.hasAny([request.auth.uid])));
+        allow create: if isSignedIn() && 
+                       (get(/databases/$(database)/documents/chats/$(chatId)).data.participants.hasAny([request.auth.uid])) &&
+                       isValidMessage(request.resource.data);
+        allow update: if isAdmin() || (
+                       isSignedIn() &&
+                       (get(/databases/$(database)/documents/chats/$(chatId)).data.participants.hasAny([request.auth.uid])) &&
+                       request.resource.data.senderId == resource.data.senderId &&
+                       request.resource.data.receiverId == resource.data.receiverId
+                      );
+        allow delete: if isAdmin() || (isSignedIn() && resource.data.senderId == request.auth.uid);
+      }
+    }
+    
+    match /test/connection {
+      allow get: if true;
+    }
+
+    match /reports/{reportId} {
+      allow create: if isSignedIn() && request.resource.data.reporterId == request.auth.uid;
+      allow get, list, update, delete: if isAdmin();
+    }
+
+    match /system/{settingId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow get: if isSignedIn();
+      allow list, create, update, delete: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow create: if isSignedIn() &&
+                    request.resource.data.userId == request.auth.uid &&
+                    request.resource.data.amount is number &&
+                    request.resource.data.planId in ['weekly', 'monthly', 'quarterly', 'annual'] &&
+                    request.resource.data.paymentMethod in ['stripe_card', 'stripe_link'];
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+  }
+}

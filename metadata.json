@@ -1,0 +1,11 @@
+{
+  "name": "Slyd",
+  "description": "A location-based social connection app for the gay community, featuring real-time map discovery and instant messaging.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

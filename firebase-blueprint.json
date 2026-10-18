@@ -1,0 +1,203 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Public and private data for a user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "age": { "type": "number" },
+        "distance": { "type": "string" },
+        "status": { "type": "string", "enum": ["online", "offline", "away"] },
+        "isSignedIn": { "type": "boolean" },
+        "lastActiveAt": { "type": "number" },
+        "sessionExpiresAt": { "type": "number" },
+        "lastLogoutAt": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "photos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "url": { "type": "string" },
+              "isPrivate": { "type": "boolean" },
+              "createdAt": { "type": "number" },
+              "caption": { "type": "string" }
+            },
+            "required": ["id", "url", "isPrivate"]
+          }
+        },
+        "unlockedPrivateUsers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "referenceSelfieUrl": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "isPremium": { "type": "boolean" },
+        "isAdmin": { "type": "boolean" },
+        "isSelfieExempt": { "type": "boolean" },
+        "isDisabled": { "type": "boolean" },
+        "disabledReason": { "type": "string" },
+        "disabledAt": { "type": "number" },
+        "messagingDisabled": { "type": "boolean" },
+        "mediaDisabled": { "type": "boolean" },
+        "hiddenFromGrid": { "type": "boolean" },
+        "lastPasswordResetRequestedAt": { "type": "number" },
+        "lastVerifiedAt": { "type": "number" },
+        "lastSelfieAttemptAt": { "type": "number" },
+        "selfieAttemptCount": { "type": "number" },
+        "bio": { "type": "string" },
+        "height": { "type": "string" },
+        "weight": { "type": "string" },
+        "role": { "type": "string", "enum": ["Top", "Bottom", "Vers", "Side"] },
+        "race": { "type": "string" },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "relationshipStatus": { "type": "string", "enum": ["Single", "Married", "Open", "Partnered"] },
+        "lookingFor": { "type": "array", "items": { "type": "string" } },
+        "hostTravel": { "type": "string", "enum": ["Host", "Travel", "Both", "Ask"] },
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "lastSeen": { "type": "string" },
+        "isIncognito": { "type": "boolean" },
+        "showOnlineStatus": { "type": "boolean" },
+        "showDistance": { "type": "boolean" },
+        "readReceipts": { "type": "boolean" },
+        "screenshotProtection": { "type": "boolean" },
+        "blockedUsers": { "type": "array", "items": { "type": "string" } },
+        "preferences": { "type": "object" },
+        "premiumPlan": { "type": "string", "enum": ["weekly", "monthly", "quarterly", "annual"] },
+        "premiumSince": { "type": "number" },
+        "premiumExpiresAt": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["stripe_card", "stripe_link"] },
+        "lastPaymentId": { "type": "string" },
+        "likedUsers": { "type": "array", "items": { "type": "string" } },
+        "superLikedUsers": { "type": "array", "items": { "type": "string" } },
+        "likedByUsers": { "type": "array", "items": { "type": "string" } },
+        "superLikedByUsers": { "type": "array", "items": { "type": "string" } },
+        "notInterestedUsers": { "type": "array", "items": { "type": "string" } },
+        "viewedByUsers": { "type": "array", "items": { "type": "string" } },
+        "viewedUsers": { "type": "array", "items": { "type": "string" } },
+        "favoriteUsers": { "type": "array", "items": { "type": "string" } },
+        "savedPhrases": { "type": "array", "items": { "type": "string" } },
+        "profileNotes": { "type": "object" },
+        "availabilityMode": { "type": "string", "enum": ["right_now", "later"] },
+        "availabilityUpdatedAt": { "type": "number" },
+        "teleportLocation": { "type": "object" }
+      },
+      "required": ["id", "name", "age"]
+    },
+    "SubscriptionPayment": {
+      "title": "Subscription Payment",
+      "description": "Payment record for Slyd+ membership upgrade via Stripe.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "planId": { "type": "string", "enum": ["weekly", "monthly", "quarterly", "annual"] },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "paymentMethod": { "type": "string", "enum": ["stripe_card", "stripe_link"] },
+        "transactionId": { "type": "string" },
+        "status": { "type": "string", "enum": ["completed", "pending_verification", "failed"] },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["userId", "planId", "amount", "paymentMethod", "status", "createdAt"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "Metadata for a 1:1 conversation.",
+      "type": "object",
+      "properties": {
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": { "type": "string" },
+        "lastMessageAt": { "type": "number" }
+      },
+      "required": ["participants"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A single chat message.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "text": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "isExpiringPhoto": { "type": "boolean" },
+        "viewedByReceiver": { "type": "boolean" },
+        "timestamp": { "type": "number" },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["senderId", "receiverId", "text", "timestamp"]
+    },
+    "UserReport": {
+      "title": "User Report",
+      "description": "Moderation report filed by a user against another user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reporterId": { "type": "string" },
+        "reportedUserId": { "type": "string" },
+        "reportedUserName": { "type": "string" },
+        "reason": { "type": "string" },
+        "details": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "resolved"] }
+      },
+      "required": ["reporterId", "reportedUserId", "reason", "createdAt"]
+    },
+    "SystemSetting": {
+      "title": "System Setting",
+      "description": "Platform-wide system configuration and feature flags.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "requireBiometrics": { "type": "boolean" },
+        "requireSubscriptionForPlus": { "type": "boolean" },
+        "allowMessaging": { "type": "boolean" },
+        "maintenanceMode": { "type": "boolean" },
+        "allowRegistrations": { "type": "boolean" },
+        "updatedAt": { "type": "number" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["id"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document."
+    },
+    "/chats/{chatId}": {
+      "schema": "Chat",
+      "description": "Conversation between two users."
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Individual messages in a chat."
+    },
+    "/reports/{reportId}": {
+      "schema": "UserReport",
+      "description": "Moderation and safety reports."
+    },
+    "/system/{settingId}": {
+      "schema": "SystemSetting",
+      "description": "Global system settings and feature flags."
+    },
+    "/payments/{paymentId}": {
+      "schema": "SubscriptionPayment",
+      "description": "Slyd+ membership payment records."
+    }
+  }
+}

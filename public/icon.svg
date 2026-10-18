@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="slydGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#000000" />
+  <circle cx="256" cy="256" r="190" fill="none" stroke="url(#slydGrad)" stroke-width="16" opacity="0.25" />
+  <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="168" fill="url(#slydGrad)" letter-spacing="-6">SLYD</text>
+</svg>
