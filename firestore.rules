@@ -74,7 +74,7 @@ service cloud.firestore {
         return isOwner(userId) &&
                (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.get('isAdmin', false)) &&
                (!('isSelfieExempt' in request.resource.data) || request.resource.data.isSelfieExempt == resource.data.get('isSelfieExempt', false)) &&
-               request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isVerified', 'lastVerifiedAt', 'lastSelfieAttemptAt', 'referenceSelfieUrl']) &&
+               request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isVerified', 'lastVerifiedAt', 'lastSelfieAttemptAt', 'referenceSelfieUrl', 'isShieldVerified', 'shieldVerifiedAt']) &&
                request.resource.data.isVerified is bool &&
                request.resource.data.lastVerifiedAt is number &&
                request.resource.data.lastSelfieAttemptAt is number;

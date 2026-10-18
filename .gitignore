@@ -26,3 +26,5 @@ dist-ssr
 .env.*
 !.env.example
 migrated_prompt_history/
+.firebase
+.vercel
