@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { UserProfile } from '../types';
-import { Crown, ShieldCheck, Sparkles } from 'lucide-react';
+import { Crown, ShieldCheck, Sparkles, Navigation, Home } from 'lucide-react';
 import { checkIsNewUser } from './ProfileBadges';
 
 interface ProfileGridProps {
@@ -12,62 +11,87 @@ interface ProfileGridProps {
 const ProfileGrid: React.FC<ProfileGridProps> = ({ profiles, onSelect }) => {
   return (
     <div className="grid grid-cols-3 gap-0.5 p-0.5 bg-slate-900">
-      {profiles.map((profile) => (
-        <div 
-          key={profile.id} 
-          onClick={() => onSelect(profile)}
-          className="relative aspect-[3/4] cursor-pointer group overflow-hidden bg-slate-800"
-        >
-          <img 
-            src={profile.imageUrl} 
-            alt={profile.name} 
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
-          
-          <div className="absolute top-2 right-2 flex items-center gap-1">
-            {profile.isVerified && (
-              <div className="bg-sky-500/90 p-1 rounded-lg shadow-lg border border-white/20 backdrop-blur-sm" title="Verified Member">
-                <ShieldCheck className="w-3 h-3 text-white" />
-              </div>
-            )}
-            {profile.isPremium && (
-              <div className="bg-gradient-to-tr from-sky-400 to-sky-600 p-1 rounded-lg shadow-lg border border-white/20" title="Slyd+ Member">
-                <Crown className="w-3 h-3 text-white" />
-              </div>
-            )}
-            {checkIsNewUser(profile) && (
-              <div className="bg-emerald-500/90 p-1 rounded-lg shadow-lg border border-white/20 backdrop-blur-sm" title="New User">
-                <Sparkles className="w-3 h-3 text-white" />
-              </div>
-            )}
-          </div>
+      {profiles.map((profile) => {
+        const isShield = Boolean(profile.isShieldVerified || profile.isVerified);
+        const isHosting = Boolean(profile.sessionState?.isHosting || profile.hostTravel === 'Host' || profile.hostTravel === 'Both');
+        const isTraveling = Boolean(profile.sessionState?.isTraveling || profile.hostTravel === 'Travel' || profile.hostTravel === 'Both');
 
-          <div className="absolute bottom-2 left-2 right-2 text-white">
-            <div className="flex items-center gap-1.5">
-              {profile.status === 'online' && (
-                <div className="w-1.5 h-1.5 bg-sky-400 rounded-full shadow-[0_0_8px_#38bdf8]" />
+        return (
+          <div 
+            key={profile.id} 
+            onClick={() => onSelect(profile)}
+            className="relative aspect-[3/4] cursor-pointer group overflow-hidden bg-slate-800 select-none"
+          >
+            <img 
+              src={profile.imageUrl} 
+              alt={profile.name} 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-85 group-hover:opacity-100" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
+            
+            {/* Top Badge Strip */}
+            <div className="absolute top-2 right-2 flex items-center gap-1">
+              {isShield && (
+                <div 
+                  className="bg-emerald-950/85 border border-emerald-500/60 p-1 rounded-lg shadow-[0_0_12px_rgba(16,185,129,0.35)] backdrop-blur-sm" 
+                  title="SlyD Shield Verified - 100% Real Guy via Biometric Liveness Verification"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
               )}
-              <span className="text-xs font-bold truncate font-display">{profile.name}</span>
-              {profile.isVerified && (
-                <ShieldCheck className="w-3 h-3 text-sky-400 shrink-0" />
+              {profile.isPremium && (
+                <div className="bg-gradient-to-tr from-sky-400 to-sky-600 p-1 rounded-lg shadow-lg border border-white/20" title="SlyD+ VIP Member">
+                  <Crown className="w-3 h-3 text-white" />
+                </div>
+              )}
+              {checkIsNewUser(profile) && (
+                <div className="bg-emerald-500/90 p-1 rounded-lg shadow-lg border border-white/20 backdrop-blur-sm" title="New Member">
+                  <Sparkles className="w-3 h-3 text-white" />
+                </div>
               )}
             </div>
-            <div className="flex justify-between items-center mt-0.5">
-              <p className="text-[9px] text-slate-400 font-bold font-display uppercase tracking-wider">{profile.distance}</p>
-              {profile.role && (
-                <span className="text-[8px] bg-sky-500/20 text-sky-300 px-1 rounded font-black uppercase">
-                  {profile.role[0]}
+
+            {/* Top Left Floating Host/Travel Status Pills */}
+            <div className="absolute top-2 left-2 flex flex-col gap-1">
+              {isHosting && (
+                <span className="text-[8px] font-black uppercase tracking-wider bg-emerald-500/80 text-black px-1.5 py-0.5 rounded shadow">
+                  Host
+                </span>
+              )}
+              {isTraveling && (
+                <span className="text-[8px] font-black uppercase tracking-wider bg-sky-500/80 text-black px-1.5 py-0.5 rounded shadow">
+                  Travel
                 </span>
               )}
             </div>
+
+            {/* Bottom Info Strip */}
+            <div className="absolute bottom-2 left-2 right-2 text-white">
+              <div className="flex items-center gap-1.5">
+                {profile.status === 'online' && (
+                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_8px_#10b981]" />
+                )}
+                <span className="text-xs font-bold truncate font-display">{profile.name}</span>
+                {isShield && (
+                  <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" title="SlyD Shield Verified" />
+                )}
+              </div>
+              <div className="flex justify-between items-center mt-0.5">
+                <p className="text-[9px] text-slate-400 font-bold font-display uppercase tracking-wider">{profile.distance}</p>
+                {profile.role && (
+                  <span className="text-[8px] bg-slate-900/80 border border-slate-700 text-slate-300 px-1 rounded font-black uppercase">
+                    {profile.role}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
       {profiles.length === 0 && (
         <div className="col-span-3 py-20 text-center">
-          <p className="text-slate-500 font-medium">No one matches those filters.</p>
-          <p className="text-xs text-slate-600 mt-1">Try expanding your search.</p>
+          <p className="text-slate-400 font-medium text-sm">No profiles nearby match those filters.</p>
+          <p className="text-xs text-slate-600 mt-1">Try expanding your distance or preference settings.</p>
         </div>
       )}
     </div>

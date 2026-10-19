@@ -18,6 +18,8 @@ import Onboarding from './components/Onboarding';
 import PremiumPaywall, { UpgradePaymentResult } from './components/PremiumPaywall';
 import AppPreferencesDrawer from './components/AppPreferencesDrawer';
 import VerificationGate from './components/VerificationGate';
+import SlyDShieldVerification from './components/SlyDShieldVerification';
+import MinimalProfileSetup from './components/MinimalProfileSetup';
 import AntiCatfishModal from './components/AntiCatfishModal';
 import AdminDashboard from './components/AdminDashboard';
 import ProfileBadges from './components/ProfileBadges';
@@ -57,7 +59,7 @@ import {
 } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from './src/lib/firestore-helpers';
 
-type AppState = 'splash' | 'landing' | 'verification' | 'onboarding' | 'profile-error' | 'main';
+type AppState = 'splash' | 'landing' | 'verification' | 'shield-verification' | 'profile-setup' | 'onboarding' | 'profile-error' | 'main';
 
 function saveCachedProfile(profile: UserProfile) {
   try {
@@ -129,6 +131,7 @@ const App: React.FC = () => {
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [showAntiCatfishModal, setShowAntiCatfishModal] = useState(false);
+  const [verifiedSelfieUrl, setVerifiedSelfieUrl] = useState<string>('/logo.png');
   const [showNotificationPulse, setShowNotificationPulse] = useState(false);
   const [hasSelectedSessionAvailability, setHasSelectedSessionAvailability] = useState(false);
   const [sessionAvailabilityMode, setSessionAvailabilityMode] = useState<'right_now' | 'later' | null>(null);
@@ -291,61 +294,72 @@ const App: React.FC = () => {
       const isCurrentRequest = () => active && requestId === authRequest;
       setCurrentUser(user);
       if (user) {
-        if (!user.emailVerified) {
-          setAppState('verification');
-        } else {
-          setProfileLoadError('');
-          const activePayload = buildActiveSessionPayload(
-            typeof document !== 'undefined' && document.visibilityState === 'hidden' ? 'away' : 'online'
-          );
+        setProfileLoadError('');
+        const activePayload = buildActiveSessionPayload(
+          typeof document !== 'undefined' && document.visibilityState === 'hidden' ? 'away' : 'online'
+        );
 
-          if (isQuotaExhausted()) {
-            const fallback = getCachedOrFallbackProfile(user.uid, user.email, user.displayName);
-            if (fallback) {
-              const merged = { ...fallback, ...activePayload };
-              setMyProfile(merged);
-              setIsPremium(hasActivePremiumSubscription(merged, requireSubscriptionForPlus));
-              saveCachedProfile(merged);
+        const userIsAdmin = user.email === 'danguero21@gmail.com';
+
+        if (isQuotaExhausted()) {
+          const fallback = getCachedOrFallbackProfile(user.uid, user.email, user.displayName);
+          if (fallback) {
+            const merged = { ...fallback, ...activePayload };
+            setMyProfile(merged);
+            setIsPremium(hasActivePremiumSubscription(merged, requireSubscriptionForPlus));
+            saveCachedProfile(merged);
+            if (!userIsAdmin && !merged.isShieldVerified) {
+              setAppState('shield-verification');
+            } else {
               setAppState('main');
-              return;
             }
+            return;
           }
+        }
 
-          try {
-            const docRef = doc(db, 'users', user.uid);
-            const docSnap = await getDoc(docRef);
-            if (!isCurrentRequest()) return;
-            if (docSnap.exists()) {
-              const data = {
-                ...(docSnap.data() as UserProfile),
-                id: docSnap.id,
-                ...activePayload
-              };
-              setMyProfile(data);
-              setIsPremium(hasActivePremiumSubscription(data, requireSubscriptionForPlus));
-              saveCachedProfile(data);
-              if (!isQuotaExhausted()) {
-                updateDoc(docRef, activePayload).catch(err => markQuotaExhausted(err));
-              }
-              setAppState('main');
-            } else {
-              setMyProfile(null);
-              setAppState('onboarding');
+        try {
+          const docRef = doc(db, 'users', user.uid);
+          const docSnap = await getDoc(docRef);
+          if (!isCurrentRequest()) return;
+          if (docSnap.exists()) {
+            const data = {
+              ...(docSnap.data() as UserProfile),
+              id: docSnap.id,
+              ...activePayload
+            };
+            setMyProfile(data);
+            setIsPremium(hasActivePremiumSubscription(data, requireSubscriptionForPlus));
+            saveCachedProfile(data);
+            if (!isQuotaExhausted()) {
+              updateDoc(docRef, activePayload).catch(err => markQuotaExhausted(err));
             }
-          } catch (err: any) {
-            markQuotaExhausted(err);
-            if (!isCurrentRequest()) return;
-            const fallback = getCachedOrFallbackProfile(user.uid, user.email, user.displayName);
-            if (fallback) {
-              const merged = { ...fallback, ...activePayload };
-              setMyProfile(merged);
-              setIsPremium(hasActivePremiumSubscription(merged, requireSubscriptionForPlus));
-              saveCachedProfile(merged);
-              setAppState('main');
+            if (!userIsAdmin && !data.isShieldVerified) {
+              setAppState('shield-verification');
             } else {
-              setProfileLoadError('Your account is signed in, but Slyd could not load its profile from Firebase.');
-              setAppState('profile-error');
+              setAppState('main');
             }
+          } else {
+            // New user without profile doc: Must complete SlyD Shield first!
+            setMyProfile(null);
+            setAppState('shield-verification');
+          }
+        } catch (err: any) {
+          markQuotaExhausted(err);
+          if (!isCurrentRequest()) return;
+          const fallback = getCachedOrFallbackProfile(user.uid, user.email, user.displayName);
+          if (fallback) {
+            const merged = { ...fallback, ...activePayload };
+            setMyProfile(merged);
+            setIsPremium(hasActivePremiumSubscription(merged, requireSubscriptionForPlus));
+            saveCachedProfile(merged);
+            if (!userIsAdmin && !merged.isShieldVerified) {
+              setAppState('shield-verification');
+            } else {
+              setAppState('main');
+            }
+          } else {
+            setProfileLoadError('Your account is signed in, but Slyd could not load its profile from Firebase.');
+            setAppState('profile-error');
           }
         }
       } else {
@@ -1119,53 +1133,120 @@ const App: React.FC = () => {
     }
   };
 
-  const handleAuthComplete = () => setAppState('verification');
+  const handleAuthComplete = () => setAppState('shield-verification');
   const handleVerificationComplete = async () => {
     const user = auth.currentUser;
-    if (user?.emailVerified) {
-      const activePayload = buildActiveSessionPayload('online');
-      if (isQuotaExhausted()) {
-        const fallback = getCachedOrFallbackProfile(user.uid, user.email, user.displayName);
-        if (fallback) {
-          const merged = { ...fallback, ...activePayload };
-          setMyProfile(merged);
-          setIsPremium(hasActivePremiumSubscription(merged, requireSubscriptionForPlus));
-          saveCachedProfile(merged);
-          setAppState('main');
-          return;
-        }
-      }
+    if (user) {
+      const userIsAdmin = user.email === 'danguero21@gmail.com';
       try {
         const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          const data = { ...docSnap.data() as UserProfile, id: docSnap.id, ...activePayload };
+          const data = { ...docSnap.data() as UserProfile, id: docSnap.id };
           setMyProfile(data);
-          setIsPremium(hasActivePremiumSubscription(data, requireSubscriptionForPlus));
-          saveCachedProfile(data);
-          if (!isQuotaExhausted()) {
-            updateDoc(docRef, activePayload).catch(err => markQuotaExhausted(err));
+          if (!userIsAdmin && !data.isShieldVerified) {
+            setAppState('shield-verification');
+          } else {
+            setAppState('main');
           }
-          setAppState('main');
           return;
         }
       } catch (err) {
-        markQuotaExhausted(err);
-        const fallback = getCachedOrFallbackProfile(user.uid, user.email, user.displayName);
-        if (fallback) {
-          const merged = { ...fallback, ...activePayload };
-          setMyProfile(merged);
-          setIsPremium(hasActivePremiumSubscription(merged, requireSubscriptionForPlus));
-          saveCachedProfile(merged);
-          setAppState('main');
-          return;
-        }
+        console.warn("Profile load error:", err);
       }
       setMyProfile(null);
-      setAppState('onboarding');
+      setAppState('shield-verification');
       return;
     }
-    setAppState(user ? 'verification' : 'landing');
+    setAppState('landing');
+  };
+
+  const handleShieldVerified = async (payload: { verifiedPhotoUrl: string; timestamp: number }) => {
+    setVerifiedSelfieUrl(payload.verifiedPhotoUrl);
+    const user = currentUser || auth.currentUser;
+    if (user) {
+      if (myProfile) {
+        const updated: UserProfile = {
+          ...myProfile,
+          isShieldVerified: true,
+          shieldVerifiedAt: payload.timestamp,
+          isVerified: true,
+          lastVerifiedAt: payload.timestamp,
+          referenceSelfieUrl: payload.verifiedPhotoUrl
+        };
+        setMyProfile(updated);
+        saveCachedProfile(updated);
+        try {
+          await updateDoc(doc(db, 'users', user.uid), {
+            isShieldVerified: true,
+            shieldVerifiedAt: payload.timestamp,
+            isVerified: true,
+            lastVerifiedAt: payload.timestamp,
+            referenceSelfieUrl: payload.verifiedPhotoUrl
+          });
+        } catch (err) {
+          console.warn("Could not save shield verification update:", err);
+        }
+        setAppState('main');
+      } else {
+        setAppState('profile-setup');
+      }
+    }
+  };
+
+  const handleMinimalProfileComplete = async (profileData: Partial<UserProfile>) => {
+    const user = currentUser || auth.currentUser;
+    if (!user) return;
+    const now = Date.now();
+    const userIsAdmin = user.email === 'danguero21@gmail.com';
+
+    const fullProfile: UserProfile = {
+      id: user.uid,
+      name: profileData.name || 'User',
+      age: profileData.age || 21,
+      imageUrl: profileData.imageUrl || verifiedSelfieUrl,
+      referenceSelfieUrl: verifiedSelfieUrl,
+      distance: '0.1 mi',
+      status: 'online',
+      bio: profileData.bio || '',
+      role: profileData.role || 'Vers',
+      height: profileData.height || "5'10\"",
+      weight: profileData.weight || '165lbs',
+      lastSeen: 'Now',
+      tribes: [],
+      lookingFor: [],
+      interests: [],
+      relationshipStatus: 'Single',
+      hostTravel: 'Both',
+      coordinates: { lat: 34.0522, lng: -118.2437 },
+      isVerified: true,
+      isShieldVerified: true,
+      shieldVerifiedAt: now,
+      lastVerifiedAt: now,
+      isAdmin: userIsAdmin,
+      isSelfieExempt: userIsAdmin,
+      isNewUser: true,
+      createdAt: now,
+      sessionState: {
+        intent: 'NOW',
+        isHosting: false,
+        isTraveling: false,
+        lastActiveTimestamp: now
+      },
+      subscription: {
+        tier: 'FREE'
+      }
+    };
+
+    try {
+      await setDoc(doc(db, 'users', user.uid), fullProfile);
+    } catch (err) {
+      console.warn("Error saving minimal profile to firestore:", err);
+    }
+
+    setMyProfile(fullProfile);
+    saveCachedProfile(fullProfile);
+    setAppState('main');
   };
   
   const handleOnboardingComplete = async (profileData: UserProfile) => {
@@ -1377,45 +1458,23 @@ const App: React.FC = () => {
       );
     }
 
-    if (needsDailyVerification) {
+    if (appState === 'shield-verification') {
       return (
-        <VerificationGate 
-          user={myProfile} 
+        <SlyDShieldVerification
+          user={myProfile}
           isAdmin={isAdmin}
-          onSkip={async () => {
-            if (currentUser) {
-              try {
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                  isSelfieExempt: true
-                });
-              } catch (error) {
-                handleFirestoreError(error, OperationType.UPDATE, `users/${currentUser.uid}`);
-              }
-            }
-            setMyProfile(prev => prev ? { ...prev, isSelfieExempt: true } : prev);
-          }}
-          onVerified={async (updatedUser) => {
-            setMyProfile(updatedUser);
-            try {
-              localStorage.setItem('slyd_cached_profile', JSON.stringify(updatedUser));
-            } catch {}
-            if (currentUser) {
-              try {
-                const updatePayload: Record<string, any> = {
-                  isVerified: true,
-                  lastVerifiedAt: updatedUser.lastVerifiedAt || Date.now(),
-                  lastSelfieAttemptAt: updatedUser.lastSelfieAttemptAt || Date.now(),
-                };
-                // Only write referenceSelfieUrl if the account established its first-time registration baseline
-                if (!myProfile?.referenceSelfieUrl && updatedUser.referenceSelfieUrl) {
-                  updatePayload.referenceSelfieUrl = updatedUser.referenceSelfieUrl;
-                }
-                await updateDoc(doc(db, 'users', currentUser.uid), updatePayload);
-              } catch (error) {
-                handleFirestoreError(error, OperationType.UPDATE, `users/${currentUser.uid}`);
-              }
-            }
-          }} 
+          onVerified={handleShieldVerified}
+          onAdminBypass={isAdmin ? () => setAppState('main') : undefined}
+        />
+      );
+    }
+
+    if (appState === 'profile-setup') {
+      return (
+        <MinimalProfileSetup
+          initialPhotoUrl={verifiedSelfieUrl}
+          onComplete={handleMinimalProfileComplete}
+          isShieldVerified={true}
         />
       );
     }
@@ -1442,13 +1501,17 @@ const App: React.FC = () => {
               className="w-full rounded-xl bg-sky-500 py-3 font-bold text-white"
               onClick={async () => {
                 const signedInUser = auth.currentUser;
-                if (!signedInUser?.emailVerified) { setAppState(signedInUser ? 'verification' : 'landing'); return; }
+                if (!signedInUser) { setAppState('landing'); return; }
                 const fallback = getCachedOrFallbackProfile(signedInUser.uid, signedInUser.email, signedInUser.displayName);
                 if (fallback) {
                   setMyProfile(fallback);
                   setIsPremium(hasActivePremiumSubscription(fallback, requireSubscriptionForPlus));
                   saveCachedProfile(fallback);
-                  setAppState('main');
+                  if (!isAdmin && !fallback.isShieldVerified) {
+                    setAppState('shield-verification');
+                  } else {
+                    setAppState('main');
+                  }
                 }
               }}
             >Continue to App</button>
@@ -1459,7 +1522,24 @@ const App: React.FC = () => {
     }
 
     if (appState === 'onboarding') {
-      return <Onboarding onComplete={handleOnboardingComplete} isAdmin={isAdmin} />;
+      return (
+        <MinimalProfileSetup
+          initialPhotoUrl={verifiedSelfieUrl}
+          onComplete={handleMinimalProfileComplete}
+          isShieldVerified={true}
+        />
+      );
+    }
+
+    // Unbreakable SlyD Shield verification check for main feed:
+    if (appState === 'main' && !isAdmin && (!myProfile || !myProfile.isShieldVerified)) {
+      return (
+        <SlyDShieldVerification
+          user={myProfile}
+          isAdmin={false}
+          onVerified={handleShieldVerified}
+        />
+      );
     }
 
     // Non-bypassable screen pop right after login on every login session (SRS Phase 2)
