@@ -36,7 +36,7 @@ export const ProfileBadges: React.FC<ProfileBadgesProps> = ({
   className = '',
   showTooltips = true,
 }) => {
-  const isVerified = Boolean(profile.isVerified);
+  const isVerified = Boolean(profile.isShieldVerified || profile.isVerified);
   const isSlydPlus = hasActivePremiumSubscription(profile);
   const isNew = checkIsNewUser(profile);
 
@@ -73,10 +73,10 @@ export const ProfileBadges: React.FC<ProfileBadgesProps> = ({
       {/* 1. SlyD Shield Verified Badge */}
       {isVerified && (
         <span
-          className={`inline-flex items-center gap-1 font-bold uppercase tracking-wider whitespace-nowrap bg-emerald-950/60 text-emerald-300 border border-emerald-500/50 backdrop-blur-md shadow-[0_0_12px_rgba(16,185,129,0.25)] select-none ${sizeConfig.badge}`}
+          className={`inline-flex items-center gap-1 font-bold uppercase tracking-wider whitespace-nowrap bg-sky-950/60 text-sky-300 border border-sky-500/40 backdrop-blur-md shadow-[0_0_12px_rgba(14,165,233,0.25)] select-none ${sizeConfig.badge}`}
           title={showTooltips ? "SlyD Shield Verified - 100% Real Guy via Biometric Liveness Verification" : undefined}
         >
-          <ShieldCheck className={`${sizeConfig.icon} text-emerald-400 shrink-0`} />
+          <ShieldCheck className={`${sizeConfig.icon} text-sky-400 shrink-0`} />
           <span>{compact || size === 'sm' ? 'Shield' : 'SlyD Shield Verified'}</span>
         </span>
       )}
@@ -84,7 +84,7 @@ export const ProfileBadges: React.FC<ProfileBadgesProps> = ({
       {/* 2. Host / Travel Floating Badges */}
       {isBoth ? (
         <span
-          className={`inline-flex items-center gap-1 font-black uppercase tracking-wider whitespace-nowrap bg-gradient-to-r from-emerald-500/25 to-sky-500/25 text-emerald-200 border border-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.3)] select-none ${sizeConfig.badge}`}
+          className={`inline-flex items-center gap-1 font-black uppercase tracking-wider whitespace-nowrap bg-gradient-to-r from-sky-500/25 to-indigo-500/25 text-sky-200 border border-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.3)] select-none ${sizeConfig.badge}`}
           title="Host & Travel Active - Can host immediately or travel"
         >
           <span>Host + Travel</span>
@@ -93,7 +93,7 @@ export const ProfileBadges: React.FC<ProfileBadgesProps> = ({
         <>
           {isHosting && (
             <span
-              className={`inline-flex items-center gap-1 font-black uppercase tracking-wider whitespace-nowrap bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 select-none ${sizeConfig.badge}`}
+              className={`inline-flex items-center gap-1 font-black uppercase tracking-wider whitespace-nowrap bg-sky-500/20 text-sky-300 border border-sky-500/40 select-none ${sizeConfig.badge}`}
               title="Can host immediately"
             >
               <span>Host</span>
@@ -101,7 +101,7 @@ export const ProfileBadges: React.FC<ProfileBadgesProps> = ({
           )}
           {isTraveling && (
             <span
-              className={`inline-flex items-center gap-1 font-black uppercase tracking-wider whitespace-nowrap bg-sky-500/20 text-sky-300 border border-sky-500/40 select-none ${sizeConfig.badge}`}
+              className={`inline-flex items-center gap-1 font-black uppercase tracking-wider whitespace-nowrap bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 select-none ${sizeConfig.badge}`}
               title="Mobile & ready to travel"
             >
               <span>Travel</span>

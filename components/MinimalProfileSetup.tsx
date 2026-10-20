@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { UserProfile, Role, RelationshipStatus } from '../types';
-import { ShieldCheck, Camera, Sparkles, User, ArrowRight } from 'lucide-react';
+import { UserProfile, Role } from '../types';
+import { ShieldCheck, Camera, ArrowRight } from 'lucide-react';
 import { compressImage } from '../src/lib/image-utils';
 
 interface MinimalProfileSetupProps {
@@ -96,7 +96,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
       {/* Top Header */}
       <div className="pt-2 pb-6 flex items-center justify-between border-b border-slate-900">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">
+          <span className="text-[10px] font-black uppercase tracking-wider text-sky-400">
             Phase 1 • Screen 3
           </span>
           <h2 className="text-xl font-black italic tracking-tighter uppercase font-display text-white">
@@ -104,29 +104,29 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
           </h2>
         </div>
         {isShieldVerified && (
-          <div className="flex items-center gap-1 bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-1 rounded-xl text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="flex items-center gap-1 bg-sky-950/60 border border-sky-500/40 px-2.5 py-1 rounded-xl text-sky-300 shadow-[0_0_12px_rgba(14,165,233,0.25)]">
+            <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
             <span className="text-[9px] font-black uppercase tracking-wider">Shield Verified</span>
           </div>
         )}
       </div>
 
       <p className="text-xs text-slate-400 font-medium py-4">
-        Takes under 60 seconds. Your profile is automatically verified with the <strong className="text-emerald-400">SlyD Shield™</strong> badge.
+        Takes under 60 seconds. Your profile is authenticated with the <strong className="text-sky-400">SlyD Shield™</strong> badge.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5 flex-1">
         {/* Photo Selection */}
         <div className="flex flex-col items-center justify-center py-2">
           <div className="relative group cursor-pointer">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden border-2 border-emerald-500/60 shadow-[0_0_20px_rgba(16,185,129,0.25)] bg-slate-900">
+            <div className="w-24 h-24 rounded-3xl overflow-hidden border-2 border-sky-500/60 shadow-[0_0_20px_rgba(14,165,233,0.25)] bg-slate-900">
               <img 
                 src={primaryPhotoUrl} 
                 alt="Profile Preview" 
                 className="w-full h-full object-cover" 
               />
             </div>
-            <label className="absolute bottom-0 right-0 p-2 bg-emerald-500 hover:bg-emerald-400 rounded-xl cursor-pointer shadow-lg text-black active:scale-95 transition-all">
+            <label className="absolute bottom-0 right-0 p-2 bg-sky-500 hover:bg-sky-400 rounded-xl cursor-pointer shadow-lg text-white active:scale-95 transition-all">
               <Camera className="w-3.5 h-3.5" />
               <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
             </label>
@@ -148,7 +148,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             maxLength={30}
-            className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 outline-none"
+            className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-sky-500 outline-none"
           />
         </div>
 
@@ -165,7 +165,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
               max={99}
               value={age}
               onChange={(e) => setAge(parseInt(e.target.value) || 18)}
-              className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 outline-none"
+              className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-sky-500 outline-none"
             />
           </div>
 
@@ -176,7 +176,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 outline-none"
+              className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-sky-500 outline-none"
             >
               {ROLES.map((r) => (
                 <option key={r} value={r} className="bg-slate-950 text-white">
@@ -197,7 +197,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
               <select
                 value={heightFeet}
                 onChange={(e) => setHeightFeet(parseInt(e.target.value))}
-                className="w-1/2 bg-slate-900/70 border border-slate-800 rounded-2xl px-3 py-3 text-xs text-white focus:ring-1 focus:ring-emerald-500 outline-none"
+                className="w-1/2 bg-slate-900/70 border border-slate-800 rounded-2xl px-3 py-3 text-xs text-white focus:ring-1 focus:ring-sky-500 outline-none"
               >
                 {[4, 5, 6, 7].map((f) => (
                   <option key={f} value={f} className="bg-slate-950 text-white">
@@ -208,7 +208,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
               <select
                 value={heightInches}
                 onChange={(e) => setHeightInches(parseInt(e.target.value))}
-                className="w-1/2 bg-slate-900/70 border border-slate-800 rounded-2xl px-3 py-3 text-xs text-white focus:ring-1 focus:ring-emerald-500 outline-none"
+                className="w-1/2 bg-slate-900/70 border border-slate-800 rounded-2xl px-3 py-3 text-xs text-white focus:ring-1 focus:ring-sky-500 outline-none"
               >
                 {Array.from({ length: 12 }, (_, i) => i).map((inch) => (
                   <option key={inch} value={inch} className="bg-slate-950 text-white">
@@ -229,7 +229,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
               max={400}
               value={weightLbs}
               onChange={(e) => setWeightLbs(parseInt(e.target.value) || 160)}
-              className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 outline-none"
+              className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-sky-500 outline-none"
             />
           </div>
         </div>
@@ -247,7 +247,7 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
             value={bio}
             onChange={(e) => setBio(e.target.value.slice(0, 150))}
             rows={2}
-            className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
+            className="w-full bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-sky-500 outline-none resize-none"
           />
         </div>
 
@@ -260,10 +260,10 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-4 bg-gradient-to-r from-emerald-500 to-sky-500 hover:from-emerald-400 hover:to-sky-400 text-black font-black rounded-2xl shadow-xl shadow-emerald-950/40 uppercase tracking-[0.2em] text-xs active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
+          className="w-full py-4 bg-sky-500 hover:bg-sky-400 text-white font-black rounded-2xl shadow-xl shadow-sky-950/50 uppercase tracking-[0.2em] text-xs active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
         >
           {isLoading ? (
-            <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
               <span>Activate Verified Profile</span>

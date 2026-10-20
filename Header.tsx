@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({
           {(view === 'chat' || view === 'profile') && (
             <button 
               onClick={onBack} 
-              className="p-2.5 bg-slate-900/50 hover:bg-slate-900 rounded-2xl transition-all text-emerald-400 border border-slate-800 active:scale-95"
+              className="p-2.5 bg-slate-900/50 hover:bg-slate-900 rounded-2xl transition-all text-sky-400 border border-slate-800 active:scale-95"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -40,10 +40,10 @@ const Header: React.FC<HeaderProps> = ({
           {/* SlyD Shield Network Status Indicator */}
           <button
             onClick={() => setShowShieldModal(true)}
-            className="flex items-center gap-1.5 bg-emerald-950/70 hover:bg-emerald-900/70 border border-emerald-500/40 px-2.5 py-1.5 rounded-xl text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.2)] transition-all active:scale-95"
+            className="flex items-center gap-1.5 bg-sky-950/70 hover:bg-sky-900/70 border border-sky-500/40 px-2.5 py-1.5 rounded-xl text-sky-300 shadow-[0_0_12px_rgba(14,165,233,0.2)] transition-all active:scale-95"
             title="SlyD Shield™ 100% Real Guys - Tap for Info"
           >
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-sky-400 shrink-0" />
             <span className="text-[10px] font-black uppercase tracking-wider hidden sm:inline">
               Shield Verified
             </span>
@@ -65,7 +65,7 @@ const Header: React.FC<HeaderProps> = ({
           <Logo size="md" variant="wordmark" className="[&_img]:h-16" />
           {isPremium && (
             <div className="absolute -top-1 -right-3 animate-bounce">
-              <Crown className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400 shadow-emerald-500/50" />
+              <Crown className="w-3.5 h-3.5 text-sky-400 fill-sky-400 shadow-sky-500/50" />
             </div>
           )}
         </div>
@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({
           {(view === 'grid' || view === 'map') && (
             <button 
               onClick={onOpenFilters}
-              className="p-2.5 bg-slate-900/50 rounded-2xl text-emerald-400 border border-slate-800 hover:bg-slate-900 transition-all shadow-lg shadow-emerald-900/10 active:scale-95"
+              className="p-2.5 bg-slate-900/50 rounded-2xl text-sky-400 border border-slate-800 hover:bg-slate-900 transition-all shadow-lg shadow-sky-900/10 active:scale-95"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -87,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({
       {/* SlyD Shield Information Modal */}
       {showShieldModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-950 border border-emerald-500/40 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-[0_0_40px_rgba(16,185,129,0.25)] relative text-white">
+          <div className="bg-slate-950 border border-sky-500/40 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-[0_0_40px_rgba(14,165,233,0.25)] relative text-white">
             <button
               onClick={() => setShowShieldModal(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-xl bg-slate-900/60"
@@ -96,43 +96,43 @@ const Header: React.FC<HeaderProps> = ({
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                <ShieldCheck className="w-6 h-6 text-emerald-400" />
+              <div className="w-12 h-12 rounded-2xl bg-sky-500/20 border border-sky-400/50 flex items-center justify-center shadow-[0_0_15px_rgba(14,165,233,0.3)]">
+                <ShieldCheck className="w-6 h-6 text-sky-400" />
               </div>
               <div>
                 <h3 className="text-base font-black uppercase tracking-tight font-display">
                   SlyD Shield™ 🛡️
                 </h3>
-                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">
+                <span className="text-[10px] font-black uppercase tracking-wider text-sky-400">
                   100% Real Guys • Zero Bots
                 </span>
               </div>
             </div>
 
-            <div className="p-3.5 bg-slate-900/70 border border-emerald-500/30 rounded-2xl">
-              <p className="text-xs text-emerald-300 font-semibold leading-relaxed">
+            <div className="p-3.5 bg-slate-900/70 border border-sky-500/30 rounded-2xl">
+              <p className="text-xs text-sky-300 font-semibold leading-relaxed">
                 "To keep SlyD free of catfishes and spam, every member completes a 10-second SlyD Shield check."
               </p>
             </div>
 
             <div className="space-y-2 text-xs text-slate-300 leading-relaxed">
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
                 <span><strong>Mandatory Enforcement:</strong> Zero unverified users can access the grid.</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
                 <span><strong>Live Pose Verification:</strong> Randomized real-time gestures prevent bots, 3D masks, and static images.</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
                 <span><strong>Private & Encrypted:</strong> Verification checks are never posted publicly.</span>
               </div>
             </div>
 
             <button
               onClick={() => setShowShieldModal(false)}
-              className="w-full py-3.5 bg-emerald-500 text-black font-black uppercase tracking-wider text-xs rounded-xl shadow-lg shadow-emerald-950/40 active:scale-95 transition-all"
+              className="w-full py-3.5 bg-sky-500 text-white font-black uppercase tracking-wider text-xs rounded-xl shadow-lg shadow-sky-950/40 active:scale-95 transition-all"
             >
               Close
             </button>

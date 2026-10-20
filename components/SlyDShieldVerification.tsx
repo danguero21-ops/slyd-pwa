@@ -7,10 +7,7 @@ import {
   RefreshCw, 
   CheckCircle2, 
   AlertTriangle, 
-  Sparkles,
-  Lock,
-  Eye,
-  Scan
+  Lock
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { compressImage } from '../src/lib/image-utils';
@@ -81,11 +78,11 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
   });
 
   const [step, setStep] = useState<'intro' | 'scanning' | 'analyzing' | 'success' | 'failed'>('intro');
-  const [cameraActive, setCameraActive] = useState(false);
+  const [, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [capturedPhotoUrl, setCapturedPhotoUrl] = useState<string | null>(null);
   const [progressSeconds, setProgressSeconds] = useState(0); // 0 to 10
-  const [livenessScore, setLivenessScore] = useState(0);
+  const [, setLivenessScore] = useState(0);
   const [statusMessage, setStatusMessage] = useState('Position your face inside the shield frame');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -160,7 +157,6 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
     let elapsed = 0;
     let motionAccumulator = 0;
 
-    // Optical motion analysis loop to detect genuine live human movement (prevents static photos/printed masks)
     const analyzeLiveMovement = () => {
       if (!videoRef.current || !canvasRef.current) return;
       const video = videoRef.current;
@@ -182,7 +178,6 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
         for (let i = 0; i < currentFrame.length; i += 16) {
           diff += Math.abs(currentFrame[i] - prev[i]);
         }
-        // Normalize diff
         if (diff > 500) {
           motionAccumulator += 1;
         }
@@ -206,7 +201,6 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
         setStatusMessage("Finalizing anti-catfish biometric baseline...");
       }
 
-      // Check completes after 10 seconds
       if (elapsed >= 10) {
         if (timerRef.current) clearInterval(timerRef.current);
         if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
@@ -242,7 +236,6 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
 
     setCapturedPhotoUrl(compressedPhotoUrl);
 
-    // If existing reference photo exists, verify identity against baseline
     const referencePhoto = user?.referenceSelfieUrl || user?.imageUrl;
     let aiMatchSuccess = true;
     let failureReason = '';
@@ -259,7 +252,6 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
       }
     }
 
-    // Ensure genuine liveness was detected (motion check)
     if (motionCount < 2 && !isAdmin) {
       setStep('failed');
       setErrorMessage("No natural motion detected. Please ensure you are in front of the camera and perform the requested live gesture.");
@@ -301,19 +293,19 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black text-white flex flex-col items-center justify-between p-6 select-none overflow-y-auto no-scrollbar font-sans">
-      {/* Background ambient security glow */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.12)_0%,transparent_60%)]" />
+      {/* Background ambient security glow (app-themed sky blue) */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.1)_0%,transparent_60%)]" />
 
       {/* Top Header */}
       <div className="w-full max-w-md flex items-center justify-between z-10 pt-2">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+          <div className="w-9 h-9 rounded-xl bg-sky-950/80 border border-sky-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(14,165,233,0.25)]">
+            <ShieldCheck className="w-5 h-5 text-sky-400" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-black italic tracking-tight font-display uppercase">SlyD Shield™</span>
-              <span className="text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">
+              <span className="text-[9px] font-black uppercase tracking-wider bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded border border-sky-500/30">
                 MANDATORY
               </span>
             </div>
@@ -340,10 +332,10 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
           <div className="w-full flex flex-col items-center text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
             {/* Visual Security Emblem */}
             <div className="relative">
-              <div className="w-24 h-24 rounded-3xl bg-emerald-950/40 border-2 border-emerald-500/40 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.25)]">
-                <Shield className="w-12 h-12 text-emerald-400 animate-pulse" />
+              <div className="w-24 h-24 rounded-3xl bg-slate-900/80 border-2 border-sky-500/40 flex items-center justify-center shadow-[0_0_40px_rgba(14,165,233,0.25)]">
+                <Shield className="w-12 h-12 text-sky-400 animate-pulse" />
               </div>
-              <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-black p-1.5 rounded-xl font-black shadow-lg">
+              <div className="absolute -bottom-2 -right-2 bg-sky-500 text-white p-1.5 rounded-xl font-black shadow-lg">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
             </div>
@@ -353,13 +345,13 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
               <h2 className="text-2xl font-black italic tracking-tighter uppercase font-display text-white">
                 100% Real Guys. Zero Bots.
               </h2>
-              <div className="p-4 bg-slate-900/80 border border-emerald-500/30 rounded-2xl shadow-inner">
-                <p className="text-xs font-semibold text-emerald-300 leading-relaxed font-sans">
+              <div className="p-4 bg-slate-900/80 border border-sky-500/30 rounded-2xl">
+                <p className="text-xs font-semibold text-sky-300 leading-relaxed font-sans">
                   "To keep SlyD free of catfishes and spam, every member completes a 10-second SlyD Shield check."
                 </p>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed max-w-xs mx-auto">
-                No unverified accounts are ever permitted on the grid. Verification photos are strictly encrypted for security and never made public.
+                No unverified accounts are permitted on the grid. Verification checks are encrypted for security and never made public.
               </p>
             </div>
 
@@ -370,12 +362,12 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-sky-400">
                     Randomized Challenge:
                   </span>
                   <button 
                     onClick={randomizeChallenge} 
-                    className="text-[10px] text-slate-500 hover:text-slate-300 flex items-center gap-1 font-bold"
+                    className="text-[10px] text-slate-400 hover:text-slate-200 flex items-center gap-1 font-bold"
                   >
                     <RefreshCw className="w-3 h-3" /> Change
                   </button>
@@ -401,7 +393,7 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
         {(step === 'scanning' || step === 'analyzing') && (
           <div className="w-full flex flex-col items-center space-y-4 animate-in fade-in duration-300">
             {/* Live Camera Viewport with Futuristic Biometric Reticle */}
-            <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full overflow-hidden border-4 border-emerald-500/50 shadow-[0_0_50px_rgba(16,185,129,0.3)] bg-slate-950 flex items-center justify-center">
+            <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full overflow-hidden border-4 border-sky-500/50 shadow-[0_0_50px_rgba(14,165,233,0.3)] bg-slate-950 flex items-center justify-center">
               <video 
                 ref={videoRef}
                 playsInline
@@ -411,25 +403,25 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
               />
 
               {/* Animated Laser Scanning Line */}
-              <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-[bounce_2s_infinite] pointer-events-none" />
+              <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#38bdf8] animate-[bounce_2s_infinite] pointer-events-none" />
 
               {/* Facial Alignment Oval */}
-              <div className="absolute inset-6 rounded-full border-2 border-dashed border-emerald-400/40 pointer-events-none" />
+              <div className="absolute inset-6 rounded-full border-2 border-dashed border-sky-400/40 pointer-events-none" />
 
               {/* Challenge Floating Badge Over Camera */}
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-emerald-500/40 flex items-center gap-2 shadow-lg">
+              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-sky-500/40 flex items-center gap-2 shadow-lg">
                 <span className="text-base">{selectedChallenge.icon}</span>
-                <span className="text-[11px] font-black text-emerald-300 uppercase tracking-wider">
+                <span className="text-[11px] font-black text-sky-300 uppercase tracking-wider">
                   {selectedChallenge.name}
                 </span>
               </div>
 
               {/* 10-Second Countdown Dial */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/85 backdrop-blur-md px-4 py-1 rounded-full border border-emerald-500/40 flex items-center gap-2">
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/85 backdrop-blur-md px-4 py-1 rounded-full border border-sky-500/40 flex items-center gap-2">
                 <span className="text-xs font-black text-white font-display">
                   {10 - progressSeconds}s
                 </span>
-                <span className="text-[10px] text-emerald-400 uppercase font-black tracking-widest">
+                <span className="text-[10px] text-sky-400 uppercase font-black tracking-widest">
                   CHECKING
                 </span>
               </div>
@@ -439,11 +431,11 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
             <div className="w-full max-w-xs space-y-2 text-center">
               <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-wider text-slate-400">
                 <span>Biometric Liveness</span>
-                <span className="text-emerald-400">{progressSeconds * 10}%</span>
+                <span className="text-sky-400">{progressSeconds * 10}%</span>
               </div>
               <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
                 <div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-sky-400 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-300"
                   style={{ width: `${(progressSeconds / 10) * 100}%` }}
                 />
               </div>
@@ -456,15 +448,15 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
 
         {step === 'success' && (
           <div className="w-full flex flex-col items-center text-center space-y-6 animate-in zoom-in-95 duration-400">
-            <div className="w-24 h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.5)]">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400" />
+            <div className="w-24 h-24 rounded-full bg-sky-500/20 border-2 border-sky-400 flex items-center justify-center shadow-[0_0_50px_rgba(14,165,233,0.4)]">
+              <CheckCircle2 className="w-12 h-12 text-sky-400" />
             </div>
             
             <div className="space-y-2">
               <h3 className="text-2xl font-black italic tracking-tighter uppercase font-display text-white">
                 SlyD Shield Verified
               </h3>
-              <p className="text-xs text-emerald-400 font-bold uppercase tracking-wider">
+              <p className="text-xs text-sky-400 font-bold uppercase tracking-wider">
                 100% Real Human • Zero Bots Guaranteed
               </p>
               <p className="text-xs text-slate-400 max-w-xs mx-auto pt-2">
@@ -473,7 +465,7 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
             </div>
 
             {capturedPhotoUrl && (
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-500/40 shadow-lg">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-sky-500/40 shadow-lg">
                 <img src={capturedPhotoUrl} alt="Verified Selfie" className="w-full h-full object-cover" />
               </div>
             )}
@@ -497,7 +489,7 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
 
             <button
               onClick={handleRetry}
-              className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-2xl uppercase tracking-[0.2em] text-xs shadow-xl shadow-emerald-950/40 active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-sky-500 hover:bg-sky-400 text-white font-black rounded-2xl uppercase tracking-[0.2em] text-xs shadow-xl shadow-sky-950/50 active:scale-95 transition-all flex items-center justify-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Retry 10-Second Check</span>
@@ -514,16 +506,16 @@ export const SlyDShieldVerification: React.FC<SlyDShieldVerificationProps> = ({
         {step === 'intro' && (
           <button
             onClick={startCamera}
-            className="w-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-black font-black rounded-2xl shadow-2xl shadow-emerald-900/50 uppercase tracking-[0.2em] text-xs active:scale-[0.97] transition-all flex items-center justify-center gap-3"
+            className="w-full py-5 bg-sky-500 hover:bg-sky-400 text-white font-black rounded-2xl shadow-2xl shadow-sky-950/60 uppercase tracking-[0.2em] text-xs active:scale-[0.97] transition-all flex items-center justify-center gap-3"
           >
-            <Camera className="w-4 h-4 text-black" />
+            <Camera className="w-4 h-4 text-white" />
             <span>Start 10s SlyD Shield Check</span>
           </button>
         )}
 
         {/* Security Trust Footnote */}
         <div className="flex items-center justify-center gap-2 text-[10px] text-slate-500 font-semibold uppercase tracking-wider text-center">
-          <Lock className="w-3 h-3 text-emerald-500" />
+          <Lock className="w-3 h-3 text-sky-400" />
           <span>Biometrics are encrypted & never shared with third parties</span>
         </div>
       </div>

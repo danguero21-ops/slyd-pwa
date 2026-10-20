@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserProfile } from '../types';
-import { Crown, ShieldCheck, Sparkles, Navigation, Home } from 'lucide-react';
+import { Crown, ShieldCheck, Sparkles } from 'lucide-react';
 import { checkIsNewUser } from './ProfileBadges';
 
 interface ProfileGridProps {
@@ -33,10 +33,10 @@ const ProfileGrid: React.FC<ProfileGridProps> = ({ profiles, onSelect }) => {
             <div className="absolute top-2 right-2 flex items-center gap-1">
               {isShield && (
                 <div 
-                  className="bg-emerald-950/85 border border-emerald-500/60 p-1 rounded-lg shadow-[0_0_12px_rgba(16,185,129,0.35)] backdrop-blur-sm" 
+                  className="bg-sky-950/85 border border-sky-500/60 p-1 rounded-lg shadow-[0_0_12px_rgba(14,165,233,0.35)] backdrop-blur-sm" 
                   title="SlyD Shield Verified - 100% Real Guy via Biometric Liveness Verification"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
                 </div>
               )}
               {profile.isPremium && (
@@ -45,7 +45,7 @@ const ProfileGrid: React.FC<ProfileGridProps> = ({ profiles, onSelect }) => {
                 </div>
               )}
               {checkIsNewUser(profile) && (
-                <div className="bg-emerald-500/90 p-1 rounded-lg shadow-lg border border-white/20 backdrop-blur-sm" title="New Member">
+                <div className="bg-sky-500/90 p-1 rounded-lg shadow-lg border border-white/20 backdrop-blur-sm" title="New Member">
                   <Sparkles className="w-3 h-3 text-white" />
                 </div>
               )}
@@ -54,12 +54,12 @@ const ProfileGrid: React.FC<ProfileGridProps> = ({ profiles, onSelect }) => {
             {/* Top Left Floating Host/Travel Status Pills */}
             <div className="absolute top-2 left-2 flex flex-col gap-1">
               {isHosting && (
-                <span className="text-[8px] font-black uppercase tracking-wider bg-emerald-500/80 text-black px-1.5 py-0.5 rounded shadow">
+                <span className="text-[8px] font-black uppercase tracking-wider bg-sky-500/80 text-white px-1.5 py-0.5 rounded shadow">
                   Host
                 </span>
               )}
               {isTraveling && (
-                <span className="text-[8px] font-black uppercase tracking-wider bg-sky-500/80 text-black px-1.5 py-0.5 rounded shadow">
+                <span className="text-[8px] font-black uppercase tracking-wider bg-indigo-500/80 text-white px-1.5 py-0.5 rounded shadow">
                   Travel
                 </span>
               )}
@@ -69,11 +69,11 @@ const ProfileGrid: React.FC<ProfileGridProps> = ({ profiles, onSelect }) => {
             <div className="absolute bottom-2 left-2 right-2 text-white">
               <div className="flex items-center gap-1.5">
                 {profile.status === 'online' && (
-                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_8px_#10b981]" />
+                  <div className="w-1.5 h-1.5 bg-sky-400 rounded-full shadow-[0_0_8px_#38bdf8]" />
                 )}
                 <span className="text-xs font-bold truncate font-display">{profile.name}</span>
                 {isShield && (
-                  <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" title="SlyD Shield Verified" />
+                  <ShieldCheck className="w-3 h-3 text-sky-400 shrink-0" title="SlyD Shield Verified" />
                 )}
               </div>
               <div className="flex justify-between items-center mt-0.5">

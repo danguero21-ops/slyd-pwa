@@ -1576,14 +1576,14 @@ const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleSelectAvailabilityMode('right_now')}
-                className="w-full p-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 via-sky-500/20 to-emerald-500/20 hover:from-emerald-500/30 hover:to-sky-500/30 border-2 border-emerald-400/60 text-left transition-all active:scale-[0.98] group shadow-lg shadow-emerald-950/30"
+                className="w-full p-4 rounded-2xl bg-gradient-to-r from-sky-500/20 via-cyan-500/20 to-sky-500/20 hover:from-sky-500/30 hover:to-cyan-500/30 border-2 border-sky-400/60 text-left transition-all active:scale-[0.98] group shadow-lg shadow-sky-950/30"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-black uppercase tracking-wider text-emerald-300 font-display flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-sm font-black uppercase tracking-wider text-sky-300 font-display flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse" />
                     <span>Looking for NOW</span>
                   </span>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-400 text-slate-950">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-400 text-slate-950">
                     Full Map & Grid
                   </span>
                 </div>
@@ -1664,7 +1664,7 @@ const App: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleSelectAvailabilityMode('right_now')}
-                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-sky-500 hover:from-emerald-400 hover:to-sky-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-xl shadow-emerald-950/50 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-sky-950/50 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   <Clock className="w-4 h-4" />
                   <span>Switch to "Looking for Now"</span>
@@ -1800,7 +1800,7 @@ const App: React.FC = () => {
                     {/* Live Online / Last Seen Status Indicator Pill */}
                     <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-black uppercase tracking-wider ${
                       myPresence.status === 'online'
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-sky-300'
                         : myPresence.isToday
                         ? 'bg-sky-500/10 border-sky-500/30 text-sky-300'
                         : 'bg-slate-900 border-slate-800 text-slate-400'
@@ -2158,7 +2158,7 @@ const App: React.FC = () => {
         {/* Mutual Interest Match Modal */}
         {matchNotification && (
           <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/85 backdrop-blur-md p-6">
-            <div className="w-full max-w-xs rounded-3xl bg-slate-950 border border-emerald-500/40 p-6 text-center space-y-4 shadow-2xl">
+            <div className="w-full max-w-xs rounded-3xl bg-slate-950 border border-sky-500/40 p-6 text-center space-y-4 shadow-2xl">
               <div className="flex items-center justify-center -space-x-3">
                 {myProfile && (
                   <img
@@ -2170,11 +2170,11 @@ const App: React.FC = () => {
                 <img
                   src={matchNotification.imageUrl}
                   alt={matchNotification.name}
-                  className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-950 ring-2 ring-emerald-400"
+                  className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-950 ring-2 ring-sky-400"
                 />
               </div>
               <div>
-                <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-widest mb-1">
+                <span className="inline-block px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 text-[10px] font-black uppercase tracking-widest mb-1">
                   Mutual Interest!
                 </span>
                 <h3 className="text-xl font-black text-white font-display">
@@ -2192,7 +2192,7 @@ const App: React.FC = () => {
                     setMatchNotification(null);
                     handleStartChat(matched);
                   }}
-                  className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all"
+                  className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-sky-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all"
                 >
                   Message {matchNotification.name} Now
                 </button>
