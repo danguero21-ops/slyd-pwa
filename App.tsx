@@ -1194,6 +1194,26 @@ const App: React.FC = () => {
     }
   };
 
+  const handleCancelSignUp = async () => {
+    try {
+      if (auth.currentUser) {
+        await signOut(auth);
+      }
+    } catch (err) {
+      console.warn("Sign out during sign-up cancellation:", err);
+    }
+    setCurrentUser(null);
+    setMyProfile(null);
+    setVerifiedSelfieUrl('/logo.png');
+    try {
+      localStorage.removeItem('slyd_cached_profile');
+      if (currentUser?.uid) {
+        localStorage.removeItem(`slyd_profile_${currentUser.uid}`);
+      }
+    } catch {}
+    setAppState('splash');
+  };
+
   const handleMinimalProfileComplete = async (profileData: Partial<UserProfile>) => {
     const user = currentUser || auth.currentUser;
     if (!user) return;
@@ -1465,6 +1485,7 @@ const App: React.FC = () => {
           isAdmin={isAdmin}
           onVerified={handleShieldVerified}
           onAdminBypass={isAdmin ? () => setAppState('main') : undefined}
+          onCancel={handleCancelSignUp}
         />
       );
     }
@@ -1475,6 +1496,7 @@ const App: React.FC = () => {
           initialPhotoUrl={verifiedSelfieUrl}
           onComplete={handleMinimalProfileComplete}
           isShieldVerified={true}
+          onCancel={handleCancelSignUp}
         />
       );
     }
@@ -1527,6 +1549,7 @@ const App: React.FC = () => {
           initialPhotoUrl={verifiedSelfieUrl}
           onComplete={handleMinimalProfileComplete}
           isShieldVerified={true}
+          onCancel={handleCancelSignUp}
         />
       );
     }
@@ -1538,6 +1561,7 @@ const App: React.FC = () => {
           user={myProfile}
           isAdmin={false}
           onVerified={handleShieldVerified}
+          onCancel={handleCancelSignUp}
         />
       );
     }

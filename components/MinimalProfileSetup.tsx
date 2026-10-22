@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { UserProfile, Role } from '../types';
-import { ShieldCheck, Camera, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Camera, ArrowRight, X } from 'lucide-react';
 import { compressImage } from '../src/lib/image-utils';
 
 interface MinimalProfileSetupProps {
   initialPhotoUrl?: string;
   onComplete: (profile: Partial<UserProfile>) => Promise<void> | void;
   isShieldVerified?: boolean;
+  onCancel?: () => void;
 }
 
 const ROLES: Role[] = ['Vers', 'Top', 'Vers Top', 'Vers Bottom', 'Bottom', 'Side'];
@@ -14,7 +15,8 @@ const ROLES: Role[] = ['Vers', 'Top', 'Vers Top', 'Vers Bottom', 'Bottom', 'Side
 export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
   initialPhotoUrl,
   onComplete,
-  isShieldVerified = true
+  isShieldVerified = true,
+  onCancel
 }) => {
   const [displayName, setDisplayName] = useState('');
   const [age, setAge] = useState<number>(24);
@@ -103,12 +105,25 @@ export const MinimalProfileSetup: React.FC<MinimalProfileSetupProps> = ({
             Set Up Your Profile
           </h2>
         </div>
-        {isShieldVerified && (
-          <div className="flex items-center gap-1 bg-sky-950/60 border border-sky-500/40 px-2.5 py-1 rounded-xl text-sky-300 shadow-[0_0_12px_rgba(14,165,233,0.25)]">
-            <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
-            <span className="text-[9px] font-black uppercase tracking-wider">Shield Verified</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {isShieldVerified && (
+            <div className="flex items-center gap-1 bg-sky-950/60 border border-sky-500/40 px-2.5 py-1 rounded-xl text-sky-300 shadow-[0_0_12px_rgba(14,165,233,0.25)]">
+              <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
+              <span className="text-[9px] font-black uppercase tracking-wider">Shield Verified</span>
+            </div>
+          )}
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-xl active:scale-95 transition-all"
+              title="Cancel sign up and return to splash screen"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Cancel</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <p className="text-xs text-slate-400 font-medium py-4">
