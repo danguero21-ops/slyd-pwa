@@ -38,6 +38,10 @@ const VerificationGate: React.FC<VerificationGateProps> = ({ user, isAdmin: prop
     return () => clearInterval(interval);
   }, [user.lastSelfieAttemptAt]);
 
+
+
+
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -54,6 +58,17 @@ const VerificationGate: React.FC<VerificationGateProps> = ({ user, isAdmin: prop
       setError("Please allow camera access to verify your identity.");
       setIsCapturing(false);
     }
+  };
+  
+  // Cancel verification / stop camera
+  const cancelVerification = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    setIsCapturing(false);
+    setSelfieUrl(null);
+    setError(null);
   };
 
   const captureSelfie = async () => {
@@ -82,12 +97,34 @@ const VerificationGate: React.FC<VerificationGateProps> = ({ user, isAdmin: prop
       }
     }
   };
+  
+  // Cancel verification / stop camera
+  const cancelVerification = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    setIsCapturing(false);
+    setSelfieUrl(null);
+    setError(null);
+  };
 
   // Detect placeholder avatars (e.g., DiceBear SVGs) and treat them as missing real photos
   const isPlaceholderAvatar = (url?: string) => {
     if (!url) return true;
     const lower = url.toLowerCase();
     return lower.includes('dicebear.com') || lower.includes('.svg') || lower.startsWith('data:image/svg');
+  };
+  
+  // Cancel verification / stop camera
+  const cancelVerification = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    setIsCapturing(false);
+    setSelfieUrl(null);
+    setError(null);
   };
 
   const hasReferenceSelfie = Boolean(user.referenceSelfieUrl);
@@ -156,6 +193,17 @@ const VerificationGate: React.FC<VerificationGateProps> = ({ user, isAdmin: prop
     } finally {
       setIsVerifying(false);
     }
+  };
+  
+  // Cancel verification / stop camera
+  const cancelVerification = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    setIsCapturing(false);
+    setSelfieUrl(null);
+    setError(null);
   };
 
   return (
@@ -306,5 +354,16 @@ const VerificationGate: React.FC<VerificationGateProps> = ({ user, isAdmin: prop
     </div>
   );
 };
+  
+  // Cancel verification / stop camera
+  const cancelVerification = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    setIsCapturing(false);
+    setSelfieUrl(null);
+    setError(null);
+  };
 
 export default VerificationGate;
